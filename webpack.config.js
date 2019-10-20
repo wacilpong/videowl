@@ -6,9 +6,13 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = (env, options) => {
   const config = {
     // absolute path for src/*
-    // resolve: {
-    //   modules: [path.join(__dirname, "src"), "node_modules"]
-    // },
+    resolve: {
+      modules: [path.join(__dirname, "src"), "node_modules"],
+
+      // alias for specific releative path to absolute path
+      // ex) images: path.resolve(__dirname, "src/assets/images")
+      alias: {}
+    },
     entry: ["./src/index.js"],
     output: {
       path: path.resolve(__dirname, "dist/js"),
@@ -16,12 +20,6 @@ module.exports = (env, options) => {
     },
     module: {
       rules: [
-        {
-          alias: {
-            images: path.join(__dirname, "src/assets/images"),
-            styles: path.join(__dirname, "src/assets/styles")
-          }
-        },
         // test: A condition that must be met
         // exclude: A condition that must not be met
         // include: An array of paths or files where the imported files will be transformed by the loader

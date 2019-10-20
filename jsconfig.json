@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      // alis example
+      // "imaages": ["*", "src/assets/images"],
+      // "styles": ["*", "src/assets/styles"]
       "*": ["*", "src/*"]
     }
   }
