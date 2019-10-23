@@ -5,7 +5,8 @@
   "scripts": {
     "build-dev": "webpack --mode development",
     "build": "webpack --mode production",
-    "dev": "webpack-dev-server --open --mode development"
+    "dev-client": "webpack-dev-server --open --mode development",
+    "dev-server": "nodemon src/server.js 55555"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -16,14 +17,17 @@
     "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.12.0",
+    "nodemon": "^1.19.4",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
+    "webpack-dev-middleware": "^3.7.2",
     "webpack-dev-server": "^3.8.2"
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
+    "crawler": "^1.2.1",
     "express": "^4.17.1"
   }
 }

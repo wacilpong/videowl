@@ -1,0 +1,12 @@
+// esnext 로 할지 타겟 정하기 (모듈 import 방식으로 할거니까)
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "loose": true
+      }
+    ]
+  ]
+}

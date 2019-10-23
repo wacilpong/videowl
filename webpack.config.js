@@ -5,6 +5,12 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env, options) => {
   const config = {
+    entry: ["@babel/polyfill", "./src/index.js"],
+    output: {
+      path: path.resolve(__dirname, "dist/js"),
+      filename: "[name].bundle.js",
+      publicPath: "/"
+    },
     // absolute path for src/*
     resolve: {
       modules: [path.join(__dirname, "src"), "node_modules"],
@@ -12,11 +18,6 @@ module.exports = (env, options) => {
       // alias for specific releative path to absolute path
       // ex) images: path.resolve(__dirname, "src/assets/images")
       alias: {}
-    },
-    entry: ["./src/index.js"],
-    output: {
-      path: path.resolve(__dirname, "dist/js"),
-      filename: "[name].bundle.js"
     },
     module: {
       rules: [
@@ -75,6 +76,13 @@ module.exports = (env, options) => {
       stats: {
         color: true
       }
+      // 노드서버로 리다이렉팅
+      // proxy: {
+      //   "^/api/*": {
+      //     target: "http://localhost:55555/api/",
+      //     secure: false
+      //   }
+      // }
     };
   } else {
     config.plugins = [new CleanWebpackPlugin(["dist"])];
