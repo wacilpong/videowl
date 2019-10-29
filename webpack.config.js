@@ -1,16 +1,25 @@
 const path = require("path");
 const webpack = require("webpack");
+const nodeExternals = require("webpack-node-externals");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 module.exports = (env, options) => {
   const config = {
-    entry: ["@babel/polyfill", "./src/index.js"],
+    entry: {
+      main: "./src/index.js"
+    },
     output: {
-      path: path.resolve(__dirname, "dist/js"),
+      path: path.resolve(__dirname, "dist"),
       filename: "[name].bundle.js",
       publicPath: "/"
     },
+    target: "node",
+    node: {
+      __dirname: false,
+      __filename: false
+    },
+    externals: [nodeExternals()],
     // absolute path for src/*
     resolve: {
       modules: [path.join(__dirname, "src"), "node_modules"],
@@ -34,13 +43,17 @@ module.exports = (env, options) => {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-env"],
-              plugins: [] // 제안중인 단계에 있는 사양을 지원하기 위한 바벨 플러그인들
+              plugins: [] // 제안단계에 있는 사양을 지원하기 위한 바벨 플러그인들
             }
           }
         },
         {
           test: /\.scss$/,
           loader: "style-loader!css-loader!sass-loader"
+        },
+        {
+          test: /\.html$/,
+          use: [{ loader: "html-loader" }]
         }
       ]
     },
@@ -61,9 +74,10 @@ module.exports = (env, options) => {
   if (options.mode === "development") {
     config.plugins = [
       new webpack.HotModuleReplacementPlugin(),
-      new HtmlWebpackPlugin({
-        title: "dev",
+      new HtmlWebPackPlugin({
         template: "./src/index.html",
+        filename: "./src/index.html",
+        excludeChunks: ["server"],
         showErrors: true
       })
     ];
@@ -72,7 +86,7 @@ module.exports = (env, options) => {
     config.devServer = {
       hot: true,
       host: "0.0.0.0",
-      contentBase: "./dist",
+      contentBase: path.resolve(__dirname, "dist"),
       stats: {
         color: true
       }
