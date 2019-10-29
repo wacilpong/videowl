@@ -76,7 +76,7 @@ module.exports = (env, options) => {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlWebPackPlugin({
         template: "./src/index.html",
-        filename: "./src/index.html",
+        filename: "index.html",
         excludeChunks: ["server"],
         showErrors: true
       })
