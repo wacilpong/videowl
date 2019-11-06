@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "build-dev": "rm -rf dist && webpack --mode development",
-    "build-prod": "rm -rf dist && webpack --mode production",
+    "build-server": "webpack --config ./webpack.server.config.js",
+    "build-dev": "rm -rf dist && webpack --mode development && npm run build-server",
+    "build-prod": "rm -rf dist && webpack --mode production && npm run build-server",
     "dev-client": "webpack-dev-server --open --mode development",
-    "dev-server": "nodemon ./dist/main.bundle.js"
+    "dev-server": "nodemon ./dist/server.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -17,10 +18,14 @@
     "css-loader": "^3.2.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
     "node-sass": "^4.12.0",
     "nodemon": "^1.19.4",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "url-loader": "^2.2.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
     "webpack-dev-middleware": "^3.7.2",

@@ -1,25 +1,22 @@
 const path = require("path");
 const webpack = require("webpack");
-const nodeExternals = require("webpack-node-externals");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = (env, options) => {
   const config = {
+    target: "web",
     entry: {
       main: "./src/index.js"
     },
     output: {
       path: path.resolve(__dirname, "dist"),
-      filename: "[name].bundle.js",
+      filename: "[name].js",
       publicPath: "/"
     },
-    target: "node",
-    node: {
-      __dirname: false,
-      __filename: false
-    },
-    externals: [nodeExternals()],
     // absolute path for src/*
     resolve: {
       modules: [path.join(__dirname, "src"), "node_modules"],
@@ -53,7 +50,12 @@ module.exports = (env, options) => {
         },
         {
           test: /\.html$/,
-          use: [{ loader: "html-loader" }]
+          use: [
+            {
+              loader: "html-loader"
+              //options: { minimize: true }
+            }
+          ]
         }
       ]
     },
@@ -90,16 +92,39 @@ module.exports = (env, options) => {
       stats: {
         color: true
       }
-      // 노드서버로 리다이렉팅
-      // proxy: {
-      //   "^/api/*": {
-      //     target: "http://localhost:55555/api/",
-      //     secure: false
-      //   }
-      // }
     };
   } else {
-    config.plugins = [new CleanWebpackPlugin(["dist"])];
+    config.plugins = [
+      new HtmlWebPackPlugin({
+        template: "./src/index.html",
+        filename: "index.html",
+        excludeChunks: ["server"],
+        showErrors: true
+      }),
+      new CleanWebpackPlugin(["dist"]),
+      new MiniCssExtractPlugin({
+        filename: "[name].css",
+        chunkFilename: "[id].css"
+      })
+    ];
+
+    config.optimization = {
+      ...config.optimization,
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: true
+        }),
+        new OptimizeCSSAssetsPlugin({})
+      ]
+    };
+
+    // config.module.rules.push({
+    //   // Loads images into CSS and js
+    //   test: /\.jpg$/,
+    //   use: [{ loader: "url-loader" }]
+    // });
   }
 
   return config;
