@@ -5,8 +5,9 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const nodeExternals = require("webpack-node-externals");
 
-module.exports = (env, options) => {
+const clientConfig = (env, options) => {
   const config = {
     target: "web",
     entry: {
@@ -56,6 +57,18 @@ module.exports = (env, options) => {
               //options: { minimize: true }
             }
           ]
+        },
+        {
+          // babel-loader와 같은 다른 로더들에 의해 수정되지 않은 소스를 검사해야 하므로 enforce: pre
+          enforce: "pre",
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: "eslint-loader",
+          options: {
+            emitWarning: true, // default: false
+            failOnError: false, // default
+            failOnWarning: false // default
+          }
         }
       ]
     },
@@ -74,7 +87,9 @@ module.exports = (env, options) => {
   };
 
   if (options.mode === "development") {
+    // 개발
     config.plugins = [
+      new webpack.NoEmitOnErrorsPlugin(),
       new webpack.HotModuleReplacementPlugin(),
       new HtmlWebPackPlugin({
         template: "./src/index.html",
@@ -94,6 +109,7 @@ module.exports = (env, options) => {
       }
     };
   } else {
+    // 라이브
     config.plugins = [
       new HtmlWebPackPlugin({
         template: "./src/index.html",
@@ -119,13 +135,51 @@ module.exports = (env, options) => {
         new OptimizeCSSAssetsPlugin({})
       ]
     };
-
-    // config.module.rules.push({
-    //   // Loads images into CSS and js
-    //   test: /\.jpg$/,
-    //   use: [{ loader: "url-loader" }]
-    // });
   }
 
   return config;
 };
+
+const serverConfig = (env, options) => {
+  const config = {
+    target: "node",
+    entry: {
+      server: "./src/backend/server-dev.js"
+    },
+    output: {
+      path: path.join(__dirname, "dist"),
+      publicPath: "/",
+      filename: "[name].js"
+    },
+    node: {
+      // Need this when working with express, otherwise the build fails
+      __dirname: false, // if you don't put this is, __dirname
+      __filename: false // and __filename return blank or /
+    },
+    externals: [nodeExternals()], // Need this to avoid error when working with Express
+    module: {
+      rules: [
+        {
+          // Transpiles ES6-8 into ES5
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader"
+          }
+        }
+      ]
+    }
+  };
+
+  if (options.mode === "development") {
+    // 개발서버
+    config.entry.server = "./src/backend/server-dev.js";
+  } else {
+    // 라이브서버
+    config.entry.server = "./src/backend/server-prod.js";
+  }
+
+  return config;
+};
+
+module.exports = (env, arg) => [clientConfig(env, arg), serverConfig(env, arg)];
