@@ -1,5 +1,8 @@
+import "babel-polyfill";
+
 import path from "path";
 import express from "express";
+import crawl from "./crawler";
 
 const app = express(),
   DIST_DIR = __dirname,
@@ -15,4 +18,6 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`App listening to ${PORT}....`);
   console.log("Press Ctrl+C to quit.");
+
+  crawl();
 });
